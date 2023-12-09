@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f0f0f0; /* Light Gray Background */
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .toggle-button {
+      padding: 20px;
+      font-size: 18px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    .toggle-button.active {
+      background-color: #2ecc71;
+    }
+  </style>
+  <title>Toggle Buttons</title>
+</head>
+<body>
+  <div class="container">
+    <button id="button1" class="toggle-button">Button 1</button>
+    <button id="button2" class="toggle-button">Button 2</button>
+    <button id="button3" class="toggle-button">Button 3</button>
+    <button id="button4" class="toggle-button">Button 4</button>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Retrieve button states from local storage or set to default off
+      const buttonStates = JSON.parse(localStorage.getItem("buttonStates")) || {};
+      
+      // Apply the initial state to the buttons
+      for (const buttonId in buttonStates) {
+        const button = document.getElementById(buttonId);
+        if (button) {
+          button.classList.toggle("active", buttonStates[buttonId]);
+        }
+      }
+
+      // Add click event listeners to the buttons
+      const buttons = document.querySelectorAll(".toggle-button");
+      buttons.forEach(button => {
+        button.addEventListener("click", function () {
+          // Toggle the active state of the button
+          this.classList.toggle("active");
+
+          // Update the button state in the local storage
+          buttonStates[this.id] = this.classList.contains("active");
+          localStorage.setItem("buttonStates", JSON.stringify(buttonStates));
+        });
+      });
+    });
+  </script>
+</body>
+</html>

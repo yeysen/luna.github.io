@@ -57,49 +57,76 @@
   <div id="json-display"></div>
 
  <!-- ... (your existing HTML code) ... -->
+<!-- Include Firebase SDK -->
+<!-- Add these script tags in the head of your HTML file -->
+<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics.js"></script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const jsonDisplay = document.getElementById("json-display");
-      
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', 'buttonStates.json', true);
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const buttonStates = JSON.parse(xhr.responseText);
-          const buttons = document.querySelectorAll(".toggle-button");
+<script>
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyBh_N7koQSZqzs2ZVvF63UNgQ_1YdhVCJ0",
+    authDomain: "butts-62d84.firebaseapp.com",
+    projectId: "butts-62d84",
+    storageBucket: "butts-62d84.appspot.com",
+    messagingSenderId: "1034980447961",
+    appId: "1:1034980447961:web:b0bd070005f78de11c10c8",
+    measurementId: "G-42RD8K9Q6Z"
+  };
 
-          function updateButtonState(button) {
-            button.classList.toggle("active");
-            buttonStates[button.id] = button.classList.contains("active");
-            updateJsonDisplay();
-          }
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  firebase.analytics();
+</script>
 
-          function initializeButtonState(button) {
-            button.classList.toggle("active", buttonStates[button.id]);
-          }
+<!-- ... (your existing HTML code) ... -->
 
-          function updateJsonDisplay() {
-            jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
-            // Update the JSON file
-            const xhrUpdate = new XMLHttpRequest();
-            xhrUpdate.open('PUT', 'buttonStates.json', true);
-            xhrUpdate.setRequestHeader('Content-type', 'application/json');
-            xhrUpdate.send(JSON.stringify(buttonStates));
-          }
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const jsonDisplay = document.getElementById("json-display");
 
-          buttons.forEach(button => {
-            initializeButtonState(button);
-            button.addEventListener("click", function () {
-              updateButtonState(this);
-            });
-          });
+    // Reference to Firebase Realtime Database
+    const dbRef = firebase.database().ref('buttonStates');
 
-          updateJsonDisplay(); // Initial display
-        }
-      };
-      xhr.send();
+    // Load initial button states
+    dbRef.once('value').then(snapshot => {
+      const buttonStates = snapshot.val() || {};
+      const buttons = document.querySelectorAll(".toggle-button");
+
+      function updateButtonState(button) {
+        button.classList.toggle("active");
+        buttonStates[button.id] = button.classList.contains("active");
+        updateJsonDisplay();
+        // Update the Firebase database
+        dbRef.set(buttonStates);
+      }
+
+      function initializeButtonState(button) {
+        button.classList.toggle("active", buttonStates[button.id]);
+      }
+
+      function updateJsonDisplay() {
+        jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
+      }
+
+      buttons.forEach(button => {
+        initializeButtonState(button);
+        button.addEventListener("click", function () {
+          updateButtonState(this);
+        });
+      });
+
+      updateJsonDisplay(); // Initial display
     });
-  </script>
+  });
+</script>
 </body>
 </html>
+
+
+
+
+
+
+
+  

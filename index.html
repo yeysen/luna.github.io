@@ -1,120 +1,19 @@
 <!DOCTYPE html>
-
-<html
- 
-lang="en">
-
+<html lang="en">
 <head>
-
-  
-<meta
- 
-charset="UTF-8">
-
-  
-<meta
- 
-name="viewport"
- 
-content="width=device-width, initial-scale=1.0">
-
-  
-<style>
-
-    
-body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: linear-gradient(to bottom right, #3498db, #e74c3c);
-      font-family: 'Arial', sans-serif;
-    }
-
-    .button-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    @media only screen and (min-width: 768px) {
-      .button-container {
-        flex-direction: row;
-      }
-    }
-
-    .button {
-      margin: 0.5em;
-      padding: 1.5em 2em;
-      font-size: calc(1em + 0.5vw);
-      cursor: pointer;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      background-color: #2ecc71;
-      background-size: cover;
-      transition: background-color 0.3s ease;
-    }
-
-    .button:hover {
-      background-color: #27ae60;
-    }
-
-    .on {
-      background-color: #e74c3c;
-    }
-
-    .off {
-      background-color: #2ecc71;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>Toggle Buttons</title>
 </head>
 <body>
+  <div class="container">
+    <button id="button1" class="toggle-button">Button 1</button>
+    <button id="button2" class="toggle-button">Button 2</button>
+    <button id="button3" class="toggle-button">Button 3</button>
+    <button id="button4" class="toggle-button">Button 4</button>
+  </div>
 
-<div class="button-container">
-  <button class="button off" onclick="toggleState(1)" aria-label="Toggle 1">Toggle 1</button>
-  <button class="button off" onclick="toggleState(2)" aria-label="Toggle 2">Toggle 2</button>
-  <button class="button off" onclick="toggleState(3)" aria-label="Toggle 3">Toggle 3</button>
-  <button class="button off" onclick="toggleState(4)" aria-label="Toggle 4">Toggle 4</button>
-</div>
-
-<script>
-  // Initial JSON state
-  let jsonState = {
-    button1: "off",
-    button2: "off",
-    button3: "off",
-    button4: "off",
-  };
-
-  // Function to toggle the state of a button
-  function toggleState(buttonNumber) {
-    const buttonKey = `button${buttonNumber}`;
-    jsonState[buttonKey] = jsonState[buttonKey] === "off" ? "on" : "off";
-    updateButtonStyle(buttonNumber);
-    console.log(jsonState); // You can remove this line in a production environment
-  }
-
-  // Function to update the button style based on JSON state
-  function updateButtonStyle(buttonNumber) {
-    const buttonKey = `button${buttonNumber}`;
-    const buttonElement = document.querySelector(`.button:nth-child(${buttonNumber})`);
-
-    if (jsonState[buttonKey] === "on") {
-      buttonElement.classList.remove("off");
-      buttonElement.classList.add("on");
-    } else {
-      buttonElement.classList.remove("on");
-      buttonElement.classList.add("off");
-    }
-  }
-
-  // Call updateButtonStyle for each button on page load
-  for (let i = 1; i <= 4; i++) {
-    updateButtonStyle(i);
-  }
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>

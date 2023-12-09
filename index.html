@@ -11,7 +11,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right, #3498db, #2ecc71); /* Gradient Background */
+      background: linear-gradient(to right, #878888, #2ecc71); /* Gradient Background */
       font-family: Arial, sans-serif;
       color: #fff;
     }
@@ -47,12 +47,12 @@
   <title>Toggle Buttons with Firebase</title>
 
   <!-- Include Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics-compat.js"></script>
 
   <script>
     // Your web app's Firebase configuration
-    const firebaseConfig = {
+    var firebaseConfig = {
       apiKey: "AIzaSyBh_N7koQSZqzs2ZVvF63UNgQ_1YdhVCJ0",
       authDomain: "butts-62d84.firebaseapp.com",
       projectId: "butts-62d84",
@@ -79,15 +79,15 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const jsonDisplay = document.getElementById("json-display");
+      var jsonDisplay = document.getElementById("json-display");
 
       // Reference to Firebase Realtime Database
-      const dbRef = firebase.database().ref('buttonStates');
+      var dbRef = firebase.database().ref('buttonStates');
 
       // Load initial button states
-      dbRef.once('value').then(snapshot => {
-        const buttonStates = snapshot.val() || {};
-        const buttons = document.querySelectorAll(".toggle-button");
+      dbRef.once('value').then(function(snapshot) {
+        var buttonStates = snapshot.val() || {};
+        var buttons = document.querySelectorAll(".toggle-button");
 
         function updateButtonState(button) {
           button.classList.toggle("active");
@@ -105,7 +105,7 @@
           jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
         }
 
-        buttons.forEach(button => {
+        buttons.forEach(function(button) {
           initializeButtonState(button);
           button.addEventListener("click", function () {
             updateButtonState(this);

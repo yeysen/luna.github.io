@@ -11,7 +11,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right, #878888, #2ecc71); /* Gradient Background */
+      background: linear-gradient(to right, #3498db, #2ecc71); /* Gradient Background */
       font-family: Arial, sans-serif;
       color: #fff;
     }
@@ -49,10 +49,15 @@
   <!-- Include Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
 
   <script>
+    // Import the functions you need from the SDKs
+    import { initializeApp } from "firebase/app";
+    import { getAnalytics } from "firebase/analytics";
+
     // Your web app's Firebase configuration
-    var firebaseConfig = {
+    const firebaseConfig = {
       apiKey: "AIzaSyBh_N7koQSZqzs2ZVvF63UNgQ_1YdhVCJ0",
       authDomain: "butts-62d84.firebaseapp.com",
       projectId: "butts-62d84",
@@ -63,8 +68,12 @@
     };
 
     // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+
+    // Reference to Firebase Realtime Database
+    const db = firebase.database();
+    const dbRef = db.ref('buttonStates');
   </script>
 </head>
 <body>
@@ -79,15 +88,12 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      var jsonDisplay = document.getElementById("json-display");
-
-      // Reference to Firebase Realtime Database
-      var dbRef = firebase.database().ref('buttonStates');
+      const jsonDisplay = document.getElementById("json-display");
 
       // Load initial button states
       dbRef.once('value').then(function(snapshot) {
-        var buttonStates = snapshot.val() || {};
-        var buttons = document.querySelectorAll(".toggle-button");
+        const buttonStates = snapshot.val() || {};
+        const buttons = document.querySelectorAll(".toggle-button");
 
         function updateButtonState(button) {
           button.classList.toggle("active");

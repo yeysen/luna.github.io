@@ -10,7 +10,7 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f0f0f0; /* Light Gray Background */
+      background: linear-gradient(to right, #3498db, #2ecc71); /* Gradient Background */
     }
 
     .container {
@@ -23,14 +23,17 @@
     .toggle-button {
       padding: 20px;
       font-size: 18px;
-      background-color: #3498db;
-      color: #fff;
+      background-color: #fff;
+      color: #3498db;
       border: none;
       cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease-in-out;
     }
 
     .toggle-button.active {
-      background-color: #2ecc71;
+      background-color: #3498db;
+      color: #fff;
     }
   </style>
   <title>Toggle Buttons</title>
@@ -45,27 +48,23 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      // Retrieve button states from local storage or set to default off
       const buttonStates = JSON.parse(localStorage.getItem("buttonStates")) || {};
-      
-      // Apply the initial state to the buttons
-      for (const buttonId in buttonStates) {
-        const button = document.getElementById(buttonId);
-        if (button) {
-          button.classList.toggle("active", buttonStates[buttonId]);
-        }
+
+      function updateButtonState(button) {
+        button.classList.toggle("active");
+        buttonStates[button.id] = button.classList.contains("active");
+        localStorage.setItem("buttonStates", JSON.stringify(buttonStates));
       }
 
-      // Add click event listeners to the buttons
+      function initializeButtonState(button) {
+        button.classList.toggle("active", buttonStates[button.id]);
+      }
+
       const buttons = document.querySelectorAll(".toggle-button");
       buttons.forEach(button => {
+        initializeButtonState(button);
         button.addEventListener("click", function () {
-          // Toggle the active state of the button
-          this.classList.toggle("active");
-
-          // Update the button state in the local storage
-          buttonStates[this.id] = this.classList.contains("active");
-          localStorage.setItem("buttonStates", JSON.stringify(buttonStates));
+          updateButtonState(this);
         });
       });
     });

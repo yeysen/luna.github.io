@@ -7,10 +7,13 @@
     body {
       margin: 0;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
-      background: linear-gradient(to right, #3498db, #2ecc71); /* Gradient Background */
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(to right,#235682, #2ecc71); /* Gradient Background */
+      font-family: Arial, sans-serif;
+      color: #fff;
     }
 
     .container {
@@ -18,6 +21,7 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
+      margin-bottom: 20px;
     }
 
     .toggle-button {
@@ -35,6 +39,10 @@
       background-color: #3498db;
       color: #fff;
     }
+
+    #json-display {
+      white-space: pre;
+    }
   </style>
   <title>Toggle Buttons</title>
 </head>
@@ -46,6 +54,8 @@
     <button id="button4" class="toggle-button">Button 4</button>
   </div>
 
+  <div id="json-display"></div>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const buttonStates = JSON.parse(localStorage.getItem("buttonStates")) || {};
@@ -54,10 +64,16 @@
         button.classList.toggle("active");
         buttonStates[button.id] = button.classList.contains("active");
         localStorage.setItem("buttonStates", JSON.stringify(buttonStates));
+        updateJsonDisplay();
       }
 
       function initializeButtonState(button) {
         button.classList.toggle("active", buttonStates[button.id]);
+      }
+
+      function updateJsonDisplay() {
+        const jsonDisplay = document.getElementById("json-display");
+        jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
       }
 
       const buttons = document.querySelectorAll(".toggle-button");
@@ -67,6 +83,8 @@
           updateButtonState(this);
         });
       });
+
+      updateJsonDisplay(); // Initial display
     });
   </script>
 </body>

@@ -11,7 +11,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right,#235682, #2ecc71); /* Gradient Background */
+      background: linear-gradient(to right, #3498db, #2ecc71); /* Gradient Background */
       font-family: Arial, sans-serif;
       color: #fff;
     }
@@ -58,33 +58,45 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      const buttonStates = JSON.parse(localStorage.getItem("buttonStates")) || {};
+      const jsonDisplay = document.getElementById("json-display");
 
-      function updateButtonState(button) {
-        button.classList.toggle("active");
-        buttonStates[button.id] = button.classList.contains("active");
-        localStorage.setItem("buttonStates", JSON.stringify(buttonStates));
-        updateJsonDisplay();
-      }
+      fetch('buttonStates.json')
+        .then(response => response.json())
+        .then(buttonStates => {
+          const buttons = document.querySelectorAll(".toggle-button");
 
-      function initializeButtonState(button) {
-        button.classList.toggle("active", buttonStates[button.id]);
-      }
+          function updateButtonState(button) {
+            button.classList.toggle("active");
+            buttonStates[button.id] = button.classList.contains("active");
+            updateJsonDisplay();
+          }
 
-      function updateJsonDisplay() {
-        const jsonDisplay = document.getElementById("json-display");
-        jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
-      }
+          function initializeButtonState(button) {
+            button.classList.toggle("active", buttonStates[button.id]);
+          }
 
-      const buttons = document.querySelectorAll(".toggle-button");
-      buttons.forEach(button => {
-        initializeButtonState(button);
-        button.addEventListener("click", function () {
-          updateButtonState(this);
-        });
-      });
+          function updateJsonDisplay() {
+            jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
+            // Update the JSON file
+            fetch('buttonStates.json', {
+              method: 'PUT', // or 'POST'
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(buttonStates),
+            });
+          }
 
-      updateJsonDisplay(); // Initial display
+          buttons.forEach(button => {
+            initializeButtonState(button);
+            button.addEventListener("click", function () {
+              updateButtonState(this);
+            });
+          });
+
+          updateJsonDisplay(); // Initial display
+        })
+        .catch(error => console.error('Error fetching JSON:', error));
     });
   </script>
 </body>

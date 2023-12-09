@@ -119,5 +119,52 @@
       });
     });
   </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var jsonDisplay = document.getElementById("json-display");
+
+    function refreshPage() {
+      location.reload();
+    }
+
+    // Load initial button states
+    dbRef.once('value').then(function(snapshot) {
+      var buttonStates = snapshot.val() || {};
+      var buttons = document.querySelectorAll(".toggle-button");
+
+      function updateButtonState(button) {
+        button.classList.toggle("active");
+        buttonStates[button.id] = button.classList.contains("active");
+        updateJsonDisplay();
+        // Update the Firebase database
+        dbRef.set(buttonStates);
+      }
+
+      function initializeButtonState(button) {
+        button.classList.toggle("active", buttonStates[button.id]);
+      }
+
+      function updateJsonDisplay() {
+        jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
+      }
+
+      buttons.forEach(function(button) {
+        initializeButtonState(button);
+        button.addEventListener("click", function () {
+          updateButtonState(this);
+        });
+      });
+
+      updateJsonDisplay(); // Initial display
+    });
+
+    // Refresh the page every 2 seconds
+    setInterval(refreshPage, 2000);
+  });
+</script>
+
+
+  
 </body>
 </html>

@@ -56,13 +56,17 @@
 
   <div id="json-display"></div>
 
+ <!-- ... (your existing HTML code) ... -->
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const jsonDisplay = document.getElementById("json-display");
-
-      fetch('buttonStates.json')
-        .then(response => response.json())
-        .then(buttonStates => {
+      
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', 'buttonStates.json', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          const buttonStates = JSON.parse(xhr.responseText);
           const buttons = document.querySelectorAll(".toggle-button");
 
           function updateButtonState(button) {
@@ -78,13 +82,10 @@
           function updateJsonDisplay() {
             jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
             // Update the JSON file
-            fetch('buttonStates.json', {
-              method: 'PUT', // or 'POST'
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(buttonStates),
-            });
+            const xhrUpdate = new XMLHttpRequest();
+            xhrUpdate.open('PUT', 'buttonStates.json', true);
+            xhrUpdate.setRequestHeader('Content-type', 'application/json');
+            xhrUpdate.send(JSON.stringify(buttonStates));
           }
 
           buttons.forEach(button => {
@@ -95,8 +96,9 @@
           });
 
           updateJsonDisplay(); // Initial display
-        })
-        .catch(error => console.error('Error fetching JSON:', error));
+        }
+      };
+      xhr.send();
     });
   </script>
 </body>

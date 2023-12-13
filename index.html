@@ -35,13 +35,33 @@
       transition: background-color 0.3s ease-in-out;
     }
 
+    .toggle-button.circular {
+      border-radius: 50%;
+      width: 100px; /* Adjust the width to make it a perfect circle */
+      height: 100px; /* Adjust the height to make it a perfect circle */
+      margin-bottom: 1in; /* Space one inch above other buttons */
+    }
+
     .toggle-button.active {
       background-color: #3498db;
       color: #fff;
     }
 
-    #json-display {
-      white-space: pre;
+    .range-slider {
+      width: 400px; /* Make the range slider wider */
+      height: 40px; /* Double the height of the range slider */
+      margin: 20px;
+      -webkit-appearance: none; /* Remove default styles on WebKit browsers */
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none; /* Remove default styles on WebKit browsers */
+      width: 40px; /* Make the slider thumb (circle) bigger */
+      height: 40px; /* Make the slider thumb (circle) bigger */
+      background-color: #3498db;
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+      cursor: pointer;
     }
   </style>
   <title>Toggle Buttons with Firebase</title>
@@ -50,7 +70,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-analytics-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-database-compat.js"></script>
-
 
   <script>
     // Your web app's Firebase configuration
@@ -71,9 +90,12 @@
     // Reference to Firebase Realtime Database
     var db = firebase.database();
     var dbRef = db.ref('buttonStates');
+    var rangeValueRef = db.ref('rangeValue');
   </script>
 </head>
 <body>
+  <button id="button5" class="toggle-button circular">Button 5</button>
+
   <div class="container">
     <button id="button1" class="toggle-button">Button 1</button>
     <button id="button2" class="toggle-button">Button 2</button>
@@ -81,13 +103,13 @@
     <button id="button4" class="toggle-button">Button 4</button>
   </div>
 
-  <div id="json-display"></div>
+  <input type="range" id="rangeSlider" class="range-slider" min="0" max="100" value="50">
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-      var jsonDisplay = document.getElementById("json-display");
+      var rangeSlider = document.getElementById("rangeSlider");
 
-      // Load initial button states
+      // Load initial button states and range value
       dbRef.once('value').then(function(snapshot) {
         var buttonStates = snapshot.val() || {};
         var buttons = document.querySelectorAll(".toggle-button");
@@ -95,7 +117,6 @@
         function updateButtonState(button) {
           button.classList.toggle("active");
           buttonStates[button.id] = button.classList.contains("active");
-          updateJsonDisplay();
           // Update the Firebase database
           dbRef.set(buttonStates);
         }
@@ -104,50 +125,24 @@
           button.classList.toggle("active", buttonStates[button.id]);
         }
 
-        function updateJsonDisplay() {
-          jsonDisplay.textContent = JSON.stringify(buttonStates, null, 2);
-        }
-
         buttons.forEach(function(button) {
           initializeButtonState(button);
           button.addEventListener("click", function () {
             updateButtonState(this);
           });
         });
+      });
 
-        updateJsonDisplay(); // Initial display
+      rangeValueRef.on('value', function(snapshot) {
+        var rangeValue = snapshot.val() || 50;
+        rangeSlider.value = rangeValue;
+      });
+
+      rangeSlider.addEventListener("input", function() {
+        var rangeValue = this.value;
+        rangeValueRef.set(rangeValue);
       });
     });
   </script>
-
-<script>
-  function updateAndDownloadJsonFile(data, filename) {
-    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = filename || 'data.json';
-    document.body.appendChild(a);
-    a.click();
-
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function updateJsonFile() {
-    updateAndDownloadJsonFile(buttonStates, 'button-states.json');
-  }
-
-  // Modify the updateButtonState function to call updateJsonFile after updating the button states
-  function updateButtonState(button) {
-    button.classList.toggle("active");
-    buttonStates[button.id] = button.classList.contains("active");
-    updateJsonFile();
-    // Update the Firebase database
-    dbRef.set(buttonStates);
-  }
-</script>
-  
 </body>
 </html>

@@ -11,17 +11,9 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right, #db3445, #2ecc71); /* Gradient Background */
+      background: linear-gradient(to right, #02053d, #1be8c6);
       font-family: Arial, sans-serif;
       color: #fff;
-    }
-
-    .container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      margin-bottom: 20px;
     }
 
     .toggle-button {
@@ -33,13 +25,13 @@
       cursor: pointer;
       border-radius: 8px;
       transition: background-color 0.3s ease-in-out;
+      margin-bottom: 1in;
     }
 
     .toggle-button.circular {
       border-radius: 50%;
-      width: 100px; /* Adjust the width to make it a perfect circle */
-      height: 100px; /* Adjust the height to make it a perfect circle */
-      margin-bottom: 1in; /* Space one inch above other buttons */
+      width: 100px;
+      height: 100px;
     }
 
     .toggle-button.active {
@@ -47,17 +39,25 @@
       color: #fff;
     }
 
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
     .range-slider {
-      width: 400px; /* Make the range slider wider */
-      height: 40px; /* Double the height of the range slider */
+      width: 400px;
+      height: 40px;
       margin: 20px;
-      -webkit-appearance: none; /* Remove default styles on WebKit browsers */
+      -webkit-appearance: none;
     }
 
     .range-slider::-webkit-slider-thumb {
-      -webkit-appearance: none; /* Remove default styles on WebKit browsers */
-      width: 40px; /* Make the slider thumb (circle) bigger */
-      height: 40px; /* Make the slider thumb (circle) bigger */
+      -webkit-appearance: none;
+      width: 40px;
+      height: 40px;
       background-color: #3498db;
       border: 2px solid #ffffff;
       border-radius: 50%;

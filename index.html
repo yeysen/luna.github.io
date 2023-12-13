@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body {
       margin: 0;
@@ -11,31 +12,8 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right, #db3445, #2ecc71);
+      background: linear-gradient(to right, #db3445, #2ecc71); /* Gradient Background */
       font-family: Arial, sans-serif;
-      color: #fff;
-    }
-
-    .toggle-button {
-      padding: 20px;
-      font-size: 18px;
-      background-color: #fff;
-      color: #3498db;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background-color 0.3s ease-in-out;
-      margin-bottom: 1in;
-    }
-
-    .toggle-button.circular {
-      border-radius: 50%;
-      width: 100px;
-      height: 100px;
-    }
-
-    .toggle-button.active {
-      background-color: #3498db;
       color: #fff;
     }
 
@@ -47,24 +25,69 @@
       margin-bottom: 20px;
     }
 
-    .range-slider {
-      width: 400px;
-      height: 40px;
-      margin: 20px;
-      -webkit-appearance: none;
+    .toggle-button, .triangle-button {
+      padding: 20px;
+      font-size: 18px;
+      background-color: #fff;
+      color: #3498db;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease-in-out;
+      margin-bottom: 20px;
     }
 
-    .range-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 40px;
-      height: 40px;
-      background-color: #3498db;
-      border: 2px solid #ffffff;
+    .toggle-button.circular {
       border-radius: 50%;
-      cursor: pointer;
+      width: 100px; /* Adjust the width to make it a perfect circle */
+      height: 100px; /* Adjust the height to make it a perfect circle */
+      margin-bottom: 1in; /* Space one inch above other buttons */
+    }
+
+    .toggle-button.active, .triangle-button.active {
+      background-color: #3498db;
+      color: #fff;
+    }
+
+    .triangle-button {
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 34.64px solid #fff; /* 20px * sqrt(3) / 2 for equilateral triangle */
+      display: inline-block;
+      margin-top: 1in; /* Space one inch below other buttons */
+      position: relative;
+    }
+
+    .triangle-button i {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .triangle-up i::before,
+    .triangle-down i::before {
+      font-size: 24px; /* Adjust the arrow size */
+    }
+
+    .triangle-down {
+      transform: rotate(180deg); /* Rotate the triangle button 180 degrees */
+    }
+
+    .triangle-up i::before {
+      content: '\f077'; /* Unicode for up arrow */
+    }
+
+    .triangle-down i::before {
+      content: '\f077'; /* Unicode for down arrow */
     }
   </style>
   <title>Toggle Buttons with Firebase</title>
+
+  <!-- Include Font Awesome (icon library) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
   <!-- Include Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.1.0/firebase-app-compat.js"></script>
@@ -89,7 +112,42 @@
 
     // Reference to Firebase Realtime Database
     var db = firebase.database();
-    var dataRef = db.ref('data');
+    var dbRef = db.ref('buttonStates');
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Load initial button states
+      dbRef.once('value').then(function(snapshot) {
+        var buttonStates = snapshot.val() || {};
+        var buttons = document.querySelectorAll(".toggle-button, .triangle-button");
+
+        function updateButtonState(button) {
+          if (button.id !== "button5") {
+            // Disable other buttons if not Button 5
+            buttons.forEach(function(otherButton) {
+              if (otherButton !== button && otherButton.id !== "button5") {
+                otherButton.classList.remove("active");
+                buttonStates[otherButton.id] = false;
+              }
+            });
+          }
+          button.classList.toggle("active");
+          buttonStates[button.id] = button.classList.contains("active");
+          // Update the Firebase database
+          dbRef.set(buttonStates);
+        }
+
+        function initializeButtonState(button) {
+          button.classList.toggle("active", buttonStates[button.id]);
+        }
+
+        buttons.forEach(function(button) {
+          initializeButtonState(button);
+          button.addEventListener("click", function () {
+            updateButtonState(this);
+          });
+        });
+      });
+    });
   </script>
 </head>
 <body>
@@ -102,47 +160,10 @@
     <button id="button4" class="toggle-button">Button 4</button>
   </div>
 
-  <input type="range" id="rangeSlider" class="range-slider" min="0" max="100" value="50">
+  <div class="container">
+    <div id="button6" class="triangle-button triangle-up"><i class="fas"></i></div>
+    <div id="button7" class="triangle-button triangle-down"><i class="fas"></i></div>
+  </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      var rangeSlider = document.getElementById("rangeSlider");
-
-      // Load initial button states and range value
-      dataRef.once('value').then(function(snapshot) {
-        var data = snapshot.val() || {};
-        var buttons = document.querySelectorAll(".toggle-button");
-
-        function updateButtonState(button) {
-          button.classList.toggle("active");
-          data[button.id] = button.classList.contains("active");
-          // Update the Firebase database
-          dataRef.set(data);
-        }
-
-        function initializeButtonState(button) {
-          button.classList.toggle("active", data[button.id]);
-        }
-
-        buttons.forEach(function(button) {
-          initializeButtonState(button);
-          button.addEventListener("click", function () {
-            updateButtonState(this);
-          });
-        });
-      });
-
-      rangeSlider.addEventListener("input", function() {
-        var rangeValue = this.value;
-        data.rangeValue = rangeValue;
-        dataRef.set(data);
-      });
-
-      dataRef.on('value', function(snapshot) {
-        var data = snapshot.val() || {};
-        rangeSlider.value = data.rangeValue || 50;
-      });
-    });
-  </script>
 </body>
 </html>

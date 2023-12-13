@@ -58,8 +58,8 @@
       -webkit-appearance: none; /* Remove default styles on WebKit browsers */
       width: 40px; /* Make the slider thumb (circle) bigger */
       height: 40px; /* Make the slider thumb (circle) bigger */
-      background-color: #3498db;
-      border: 2px solid #ffffff;
+      background-color: #fff;
+      border: 2px solid #3498db;
       border-radius: 50%;
       cursor: pointer;
     }
@@ -92,8 +92,23 @@
     var dbRef = db.ref('buttonStates');
     var rangeValueRef = db.ref('rangeValue');
   </script>
+
+  <!-- Add the script for updating rangeValue in the database -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var rangeSlider = document.getElementById("rangeSlider");
+
+      rangeSlider.addEventListener("input", function() {
+        var rangeValue = this.value;
+
+        // Update the Firebase database with the range slider value
+        rangeValueRef.set(rangeValue);
+      });
+    });
+  </script>
 </head>
 <body>
+  <!-- Your existing HTML content -->
   <button id="button5" class="toggle-button circular">Button 5</button>
 
   <div class="container">
@@ -106,6 +121,7 @@
   <input type="range" id="rangeSlider" class="range-slider" min="0" max="100" value="50">
 
   <script>
+    // Your existing JavaScript code
     document.addEventListener("DOMContentLoaded", function () {
       var rangeSlider = document.getElementById("rangeSlider");
 

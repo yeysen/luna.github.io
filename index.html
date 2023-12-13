@@ -11,7 +11,7 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: linear-gradient(to right, #02053d, #1be8c6);
+      background: linear-gradient(to right, #db3445, #2ecc71);
       font-family: Arial, sans-serif;
       color: #fff;
     }
@@ -89,8 +89,7 @@
 
     // Reference to Firebase Realtime Database
     var db = firebase.database();
-    var dbRef = db.ref('buttonStates');
-    var rangeValueRef = db.ref('rangeValue');
+    var dataRef = db.ref('data');
   </script>
 </head>
 <body>
@@ -110,19 +109,19 @@
       var rangeSlider = document.getElementById("rangeSlider");
 
       // Load initial button states and range value
-      dbRef.once('value').then(function(snapshot) {
-        var buttonStates = snapshot.val() || {};
+      dataRef.once('value').then(function(snapshot) {
+        var data = snapshot.val() || {};
         var buttons = document.querySelectorAll(".toggle-button");
 
         function updateButtonState(button) {
           button.classList.toggle("active");
-          buttonStates[button.id] = button.classList.contains("active");
+          data[button.id] = button.classList.contains("active");
           // Update the Firebase database
-          dbRef.set(buttonStates);
+          dataRef.set(data);
         }
 
         function initializeButtonState(button) {
-          button.classList.toggle("active", buttonStates[button.id]);
+          button.classList.toggle("active", data[button.id]);
         }
 
         buttons.forEach(function(button) {
@@ -133,14 +132,15 @@
         });
       });
 
-      rangeValueRef.on('value', function(snapshot) {
-        var rangeValue = snapshot.val() || 50;
-        rangeSlider.value = rangeValue;
-      });
-
       rangeSlider.addEventListener("input", function() {
         var rangeValue = this.value;
-        rangeValueRef.set(rangeValue);
+        data.rangeValue = rangeValue;
+        dataRef.set(data);
+      });
+
+      dataRef.on('value', function(snapshot) {
+        var data = snapshot.val() || {};
+        rangeSlider.value = data.rangeValue || 50;
       });
     });
   </script>
